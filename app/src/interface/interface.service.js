@@ -10,7 +10,7 @@
  *
  * @requires $rootScope
  * @requires $timeout
- * @requires $routeParams
+ * @requires $route
  * @requires $q
  * @requires evtviewer.core.config
  * @requires evtviewer.communication.evtCommunication
@@ -24,8 +24,8 @@
 **/
 angular.module('evtviewer.interface')
 
-.service('evtInterface', ['$rootScope', '$timeout', 'evtTranslation', 'evtCommunication', 'evtCriticalApparatusParser', 'evtCriticalParser', 'evtPinnedElements', 'config', '$routeParams', 'parsedData', 'evtReading', '$q',
-    function($rootScope, $timeout, evtTranslation, evtCommunication, evtCriticalApparatusParser, evtCriticalParser, evtPinnedElements, config, $routeParams, parsedData, evtReading, $q) {
+.service('evtInterface', ['$rootScope', '$timeout', 'evtTranslation', 'evtCommunication', 'evtCriticalApparatusParser', 'evtCriticalParser', 'evtPinnedElements', 'config', '$route', 'parsedData', 'evtReading', '$q',
+    function($rootScope, $timeout, evtTranslation, evtCommunication, evtCriticalApparatusParser, evtCriticalParser, evtPinnedElements, config, $route, parsedData, evtReading, $q) {
     var mainInterface = {};
     /**
      * @ngdoc property
@@ -241,7 +241,7 @@ angular.module('evtviewer.interface')
                           }
                       }
 
-                      mainInterface.updateParams($routeParams);
+                      mainInterface.updateParams($route.current.params);
 
                       var promises = [];
 
