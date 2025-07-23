@@ -14,6 +14,7 @@ angular.module('evtviewer.dataHandler')
 	var parser = { };
 
 	var defSurfaceElement = 'surface',
+		defGraphicElement = 'graphic',
 		defZoneElement = 'zone';
 	/**
      * @ngdoc method
@@ -36,7 +37,30 @@ angular.module('evtviewer.dataHandler')
 				var surfaceId = surfaceElement.getAttribute('xml:id'),
 					surfaceCorresp = surfaceElement.getAttribute('corresp');
 				surfaceCorresp = surfaceCorresp ? surfaceCorresp.replace('#', '') : surfaceCorresp;
+				var pageWidth = {};
+				var pageHeight = {};
 				//TODO: decide if it's better to save facsimile infos in page object model	
+				angular.forEach(surfaceElement.childNodes, function(child){
+					if (child.tagName === defGraphicElement) {
+						var newGraphic = {};
+
+						if (child.attributes) {
+							for (var i = 0; i < child.attributes.length; i++) {
+								var attrib = child.attributes[i];
+								if (attrib.specified) {
+									var attrName = attrib.name === 'xml:id' ? 'id' : attrib.name.replace(':', '-');
+									newGraphic[attrName] = attrib.value;
+								}
+							}
+						}
+						newGraphic.page = surfaceCorresp;
+						newGraphic.id = newGraphic.id && newGraphic.id.length > 0 ? newGraphic.id.length : surfaceId;
+						pageWidth[newGraphic.page] = newGraphic['width'];
+						pageHeight[newGraphic.page] = newGraphic['height'];
+						parsedData.addGraphic(newGraphic);
+
+					}
+				});
 				angular.forEach(surfaceElement.childNodes, function(child){
 					if (child.tagName === defZoneElement) {
 						var newZone = {};
@@ -51,11 +75,14 @@ angular.module('evtviewer.dataHandler')
 							}
 						}
 						newZone.page = surfaceCorresp;
+						if (pageWidth[newZone.page] && pageWidth[newZone.page].length > 0) { newZone.width = parseInt(pageWidth[newZone.page].replace(/px$/gi,''),10); }
+						if (pageHeight[newZone.page] && pageHeight[newZone.page].length > 0) { newZone.height = parseInt(pageHeight[newZone.page].replace(/px$/gi,''),10); }
 						parsedData.addZone(newZone);
 						
 					}
 				});
 		});
+		console.log('## GRAPHICS ##', parsedData.getGraphics());
 		console.log('## ZONES ##', parsedData.getZones());
 	};
 

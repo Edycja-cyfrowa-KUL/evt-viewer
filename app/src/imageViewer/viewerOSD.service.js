@@ -191,7 +191,7 @@
             tmp.y = _(zone.uly);
             tmp.width = _(zone.lrx - zone.ulx);
             tmp.hight = _(zone.lry - zone.uly);
-            return new OpenSeadragon.Rect(tmp.x / ImageNormalizationCoefficient, tmp.y / ImageNormalizationCoefficient, tmp.width / ImageNormalizationCoefficient, tmp.hight / ImageNormalizationCoefficient);
+            return new OpenSeadragon.Rect(tmp.x / (zone.width ? zone.width : ImageNormalizationCoefficient), tmp.y / (zone.width ? zone.width : ImageNormalizationCoefficient), tmp.width / (zone.width ? zone.width : ImageNormalizationCoefficient), tmp.hight / (zone.width ? zone.width : ImageNormalizationCoefficient));
          }
 
          function _(value) {
@@ -201,8 +201,8 @@
          viewerHandler.moveToZone = function (zone) {
             var oldCenter = viewerHandler.viewer.viewport.getCenter();
             var currentBounds = viewerHandler.viewer.viewport.getBounds(true);
-            var normalizedZoney = zone.uly / ImageNormalizationCoefficient;
-            var newY = ((zone.uly / ImageNormalizationCoefficient) < oldCenter.y) ? oldCenter.y : zone.uly / ImageNormalizationCoefficient;
+            var normalizedZoney = zone.uly / (zone.width ? zone.width : ImageNormalizationCoefficient);
+            var newY = ((zone.uly / (zone.width ? zone.width : ImageNormalizationCoefficient)) < oldCenter.y) ? oldCenter.y : zone.uly / (zone.width ? zone.width : ImageNormalizationCoefficient);
             var newCenter = new OpenSeadragon.Point(oldCenter.x, newY);
             viewerHandler.viewer.viewport.panTo(newCenter);
          };
@@ -213,10 +213,10 @@
             for (var i = 0; i < zones.length; i++) {
 
                var r = new OpenSeadragon.Rect(
-                  zones[i].ulx / ImageNormalizationCoefficient,
-                  zones[i].uly / ImageNormalizationCoefficient,
-                  (zones[i].lrx - zones[i].ulx) / ImageNormalizationCoefficient,
-                  (zones[i].lry - zones[i].uly) / ImageNormalizationCoefficient);
+                  zones[i].ulx / (zone.width ? zone.width : ImageNormalizationCoefficient),
+                  zones[i].uly / (zone.width ? zone.width : ImageNormalizationCoefficient),
+                  (zones[i].lrx - zones[i].ulx) / (zone.width ? zone.width : ImageNormalizationCoefficient),
+                  (zones[i].lry - zones[i].uly) / (zone.width ? zone.width : ImageNormalizationCoefficient));
 
                rectObjs.push(r);
             }

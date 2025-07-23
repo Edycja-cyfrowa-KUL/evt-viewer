@@ -496,7 +496,26 @@ angular.module('evtviewer.dataHandler')
 	};
 	/**
      * @ngdoc property
-     * @name evtviewer.dataHandler.parsedData#glyphsCollection
+     * @name evtviewer.dataHandler.parsedData#graphicsCollection
+     * @propertyOf evtviewer.dataHandler.parsedData
+     * @description [Private] Internal property where information about graphics are stored.
+	<pre>
+			var graphicsCollection = {
+				[graphicId] : {
+					page,
+					id,
+					[attribName]: ''
+				},
+				_indexes: [graphicId]
+			};
+	</pre>
+     */
+      var graphicsCollection = {
+         _indexes: []
+      };
+	/**
+     * @ngdoc property
+     * @name evtviewer.dataHandler.parsedData#zonesCollection
      * @propertyOf evtviewer.dataHandler.parsedData
      * @description [Private] Internal property where information about zones are stored.
      	<pre>
@@ -1145,14 +1164,12 @@ angular.module('evtviewer.dataHandler')
      * @todo: Do it again!!
      */
 	parsedData.getPageImage = function(pageId) {
-		var images = [];
-
+		var images = graphicsCollection;
 		var i = 0;
 		while (i < images.length && images[i].page !== pageId) {
 			i++;
 		}
-		// return images[i];
-		return {};
+		return i < images.length ? images[i] : undefined;
 	};
 	
 	/* SVG */
@@ -2994,6 +3011,72 @@ angular.module('evtviewer.dataHandler')
 	// ///////////////// //
 	// DIGITAL FACSIMILE //
 	// ///////////////// //
+	/**
+     * @ngdoc method
+     * @name evtviewer.dataHandler.parsedData#addGraphic
+     * @methodOf evtviewer.dataHandler.parsedData
+     *
+     * @description
+     * Add a graphic to the collection of parsed ones.
+     * @param {Object} graphic Object representing the graphic to add. It ist structured as follows:
+	<pre>
+			var graphic = {
+				page,
+				id,
+				[attribName]: ''
+			};
+	</pre>
+     */
+	parsedData.addGraphic = function(graphic) {
+		var graphicId,
+			graphicIndexes = graphicsCollection._indexes;
+
+		if (graphic && graphic.id !== '') {
+			graphicId = graphic.id;
+		} else {
+			graphicId = graphic.id = 'graphic_' + (graphicIndexes + 1);
+		}
+		if (graphicsCollection[graphicId] === undefined) {
+			graphicIndexes[graphicIndexes.length] = graphicId;
+			graphicsCollection[graphicId] = graphic;
+			graphicIndexes.length++;
+			// _console.log('parsedData - addGraphic ', graphic);
+		}
+	};
+
+	/**
+     * @ngdoc method
+     * @name evtviewer.dataHandler.parsedData#getGraphics
+     * @methodOf evtviewer.dataHandler.parsedData
+     *
+     * @description
+     * Retrieve the collection of parsed graphics.
+     * @returns {Object} Object representing the collection of parsed graphics
+     */
+	parsedData.getGraphics = function() {
+		return graphicsCollection;
+	};
+
+	/**
+     * @ngdoc method
+     * @name evtviewer.dataHandler.parsedData#getGraphic
+     * @methodOf evtviewer.dataHandler.parsedData
+     *
+     * @description
+     * Retrieve all the information of a particular graphic.
+     * @param {string} graphicId Identifier of graphic to retrieve
+     * @returns {Object} Object representing the graphic to add. It ist structured as follows:
+	<pre>
+			var graphic = {
+				page,
+				id,
+				[attribName]: ''
+			};
+	</pre>
+     */
+	parsedData.getGraphic = function(graphicId) {
+		return graphicsCollection[graphicId];
+	};
 	/**
      * @ngdoc method
      * @name evtviewer.dataHandler.parsedData#addZone

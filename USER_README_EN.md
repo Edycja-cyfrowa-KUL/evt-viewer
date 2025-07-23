@@ -78,6 +78,7 @@ If you find this file difficult to read and/or change you can try out the beta [
 * `analoguesUrl`. Indicate the file name of the XML file encoding the list of all the bibliographic references for the analogues apparatus. It can point either to an internal folder or to an external online resource.
 * `sourcesTextsUrl`. Indicate the folder where you intend to put the XML containing the texts of external sources (if you have any).
 * `singleImagesUrl`. Indicate the folder where you intend to save the edition images, default path is to `data/images/single`.
+* `iiifUrl`. Indicate the URL of the IIIF endpoint with the edition images, IMPORTANT !!! The last character is a "special character" - a file path separator used inside [the identifier of the requested image](https://iiif.io/api/image/3.0/#3-identifier), e.g. if image path is `BUKUL/Image00001.tif` (file path separator is `/`) and `"iifUrl":"/iiif/3/!"`, then `image_url` will be set to `/iiif/3/!BUKUL!Image00001.tif`. See also `slash_substitute` in [Cantaloupe->Images->URI Considerations](https://cantaloupe-project.github.io/manual/5.0/images.html#URIConsiderations)
 * `enableXMLdownload`. Decide if you want to enable the XML download (`true`) or not (`false`).
 
 ##### VisColl files

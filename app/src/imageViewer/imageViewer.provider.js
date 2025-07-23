@@ -21,13 +21,36 @@ angular.module('evtviewer.openseadragon')
                  var p;
                  var pp;
                  var source="";
+                 var images = parsedData.getGraphics();
                  options.tileSources = [];
                  for(var i = 0; i < lenght; i++){
                      var imgobj = {type:"image", url:""};
+                     var iiifobj = {'@context':'http://iiif.io/api/image/2/context.json',profile:['http://iiif.io/api/image/2/level2.json'],protocol:'http://iiif.io/api/image'};
                      p = pages[i];
                      pp = parsedData.getPage(p);
                      source = pp.source;
-                     if(source!==undefined && source!=='' && source!==' ' && source!==null){
+                     // var image = parsedData.getPageImage(pp.value); console.log('## GRAPHICS ##', parsedData.getGraphics());
+                     var pn = 0;
+                     while (pn < images._indexes.length && (!(images[images._indexes[pn]]) || (images[images._indexes[pn]].page !== pp.value))) {
+                         pn++;
+                     }
+                     var image = i < images._indexes.length ? images[images._indexes[pn]] : undefined;
+                     // [2.1. Image Request URI Syntax](https://iiif.io/api/image/3.0/#21-image-request-uri-syntax)
+                     //		{scheme}://{server}{/prefix}/{identifier}/{region}/{size}/{rotation}/{quality}.{format}
+                     //	->	{scheme}://{server}{/prefix}/{identifier}/info.json
+                     var image_url = image && image.url && image.url.length ? image.url.replace(/\/[^\/]+\/[^\/]+\/[^\/]+\/(?<quality>color|gray|bitonal|default)\.(?<format>jpg)$/,'/info.json') : undefined;
+                     if (image_url && !image_url.match(/\/info\.json$/) && config.iiifUrl && config.iiifUrl.length > 0){
+                         //                           replace all '/' with last character from 'iiifUrl', e.g.
+                         //				"image_url":"BUKUL/Image00001.tif" && "iifUrl":"/iiif/3/!" -> "image_url":"/iiif/3/!BUKUL!Image00001.tif/info.json"
+                         image_url = config.iiifUrl + image_url.replaceAll('/',config.iiifUrl.at(-1)) + '/info.json';
+                     }
+                     if(image_url && image_url.match(/\/info\.json$/) && image.width && image.width.length > 0 && image.height && image.height.length > 0){
+                         iiifobj['@id'] = image_url.replace(/\/info\.json$/,'');
+                         //TODO: handle units other than 'px'
+                         iiifobj.width = parseInt(image.width.replace(/px$/gi,''),10);
+                         iiifobj.height = parseInt(image.height.replace(/px$/gi,''),10);
+                         options.tileSources.push(iiifobj);
+                     }else if(source!==undefined && source!=='' && source!==' ' && source!==null){
                      imgobj.url = source;
                      options.tileSources.push(imgobj);
                      }
