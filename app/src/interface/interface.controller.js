@@ -329,7 +329,7 @@ angular.module('evtviewer.interface')
             */
          $scope.getWebSite = function () {
             var webSite = evtInterface.getProperty('webSite');
-            return webSite.indexOf('http://') < 0 ? 'http://' + webSite : webSite;
+            return !webSite.match(/^https?\:\/\//i) ? 'http://' + webSite : webSite;
          };
          /**
             * @ngdoc method
